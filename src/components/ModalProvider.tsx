@@ -5,7 +5,8 @@ import Form from "./Form";
 interface FormData {
   name: string;
   email: string;
-  message: string;
+  experience: string;
+  github: string;
 }
 
 const ModalProvider = () => {
@@ -23,8 +24,8 @@ const ModalProvider = () => {
     <Modal
       isOpen={isOpen}
       onClose={handleCancel}
-      title="문의하기"
-      description="아래 폼을 작성하여 문의사항을 보내주세요."
+      title="신청 폼"
+      description="이메일과 FE 경력 연차 등 간단한 정보를 입력해주세요."
     >
       <Form onSubmit={handleSubmit} onCancel={handleCancel} />
     </Modal>

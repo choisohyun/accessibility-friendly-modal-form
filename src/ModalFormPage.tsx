@@ -6,7 +6,8 @@ import "./styles/Modal.css";
 interface FormData {
   name: string;
   email: string;
-  message: string;
+  experience: string;
+  github: string;
 }
 
 const ModalFormPage = () => {
@@ -25,11 +26,9 @@ const ModalFormPage = () => {
 
   return (
     <div className="page-container">
-      <h1 className="page-title">접근성 친화적인 모달 폼</h1>
-
       <div className="button-container">
         <button onClick={handleOpenModal} className="open-modal-button">
-          모달 폼 열기
+          신청 폼 열기
         </button>
       </div>
 
@@ -38,13 +37,16 @@ const ModalFormPage = () => {
           <h3 className="submitted-data-title">제출된 데이터:</h3>
           <div className="submitted-data-grid">
             <div>
-              <strong>이름:</strong> {submittedData.name}
+              <strong>이름/닉네임:</strong> {submittedData.name}
             </div>
             <div>
               <strong>이메일:</strong> {submittedData.email}
             </div>
             <div>
-              <strong>메시지:</strong> {submittedData.message}
+              <strong>FE 경력 연차:</strong> {submittedData.experience}
+            </div>
+            <div>
+              <strong>GitHub 링크:</strong> {submittedData.github || "미입력"}
             </div>
           </div>
         </div>

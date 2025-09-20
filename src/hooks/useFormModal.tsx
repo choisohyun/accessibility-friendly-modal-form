@@ -3,7 +3,8 @@ import { useState, useCallback, useEffect } from "react";
 interface FormData {
   name: string;
   email: string;
-  message: string;
+  experience: string;
+  github: string;
 }
 
 interface ModalState {

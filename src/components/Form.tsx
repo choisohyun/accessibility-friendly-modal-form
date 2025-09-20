@@ -4,7 +4,8 @@ import "../styles/Modal.css";
 interface FormData {
   name: string;
   email: string;
-  message: string;
+  experience: string;
+  github: string;
 }
 
 interface FormProps {
@@ -16,7 +17,8 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
-    message: "",
+    experience: "",
+    github: "",
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,8 +41,8 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
       newErrors.email = "올바른 이메일 형식을 입력해주세요.";
     }
 
-    if (!formData.message.trim()) {
-      newErrors.message = "메시지를 입력해주세요.";
+    if (!formData.experience.trim()) {
+      newErrors.experience = "경력 연차를 선택해주세요.";
     }
 
     setErrors(newErrors);
@@ -86,7 +88,7 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
     >
       <div className="form-field">
         <label htmlFor="name" className="form-label">
-          이름 *
+          이름 / 닉네임 *
         </label>
         <input
           id="name"
@@ -127,22 +129,47 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
       </div>
 
       <div className="form-field">
-        <label htmlFor="message" className="form-label">
-          메시지 *
+        <label htmlFor="experience" className="form-label">
+          FE 경력 연차 *
         </label>
-        <textarea
-          id="message"
-          value={formData.message}
-          onChange={(e) => handleInputChange("message", e.target.value)}
-          aria-invalid={!!errors.message}
-          aria-describedby={errors.message ? "message-error" : undefined}
+        <select
+          id="experience"
+          value={formData.experience}
+          onChange={(e) => handleInputChange("experience", e.target.value)}
+          aria-invalid={!!errors.experience}
+          aria-describedby={errors.experience ? "experience-error" : undefined}
           aria-required="true"
-          rows={4}
-          className="form-input form-textarea"
+          className="form-input"
+        >
+          <option value="">선택해주세요</option>
+          <option value="0-3년">0-3년</option>
+          <option value="4-7년">4-7년</option>
+          <option value="8년 이상">8년 이상</option>
+        </select>
+        {errors.experience && (
+          <div id="experience-error" role="alert" className="error-message">
+            {errors.experience}
+          </div>
+        )}
+      </div>
+
+      <div className="form-field">
+        <label htmlFor="github" className="form-label">
+          GitHub 링크 (선택)
+        </label>
+        <input
+          id="github"
+          type="url"
+          value={formData.github}
+          onChange={(e) => handleInputChange("github", e.target.value)}
+          aria-invalid={!!errors.github}
+          aria-describedby={errors.github ? "github-error" : undefined}
+          className="form-input"
+          placeholder="https://github.com/username"
         />
-        {errors.message && (
-          <div id="message-error" role="alert" className="error-message">
-            {errors.message}
+        {errors.github && (
+          <div id="github-error" role="alert" className="error-message">
+            {errors.github}
           </div>
         )}
       </div>
@@ -162,7 +189,7 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
           className="submit-button"
           aria-label={isSubmitting ? "제출 중입니다" : "폼 제출"}
         >
-          {isSubmitting ? "제출 중..." : "제출"}
+          {isSubmitting ? "제출 중..." : "제출하기"}
         </button>
       </div>
     </form>
