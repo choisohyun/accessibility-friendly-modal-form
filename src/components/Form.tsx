@@ -1,4 +1,12 @@
 import { useState } from "react";
+import {
+  FormField,
+  FormLabel,
+  FormInput,
+  FormSelect,
+  FormError,
+} from "./form/index";
+import { useFormValidation } from "../hooks/useFormValidation";
 import "../styles/Modal.css";
 
 interface FormData {
@@ -13,6 +21,12 @@ interface FormProps {
   onCancel: () => void;
 }
 
+const experienceOptions = [
+  { value: "0-3년", label: "0-3년" },
+  { value: "4-7년", label: "4-7년" },
+  { value: "8년 이상", label: "8년 이상" },
+];
+
 const Form = ({ onSubmit, onCancel }: FormProps) => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -20,39 +34,14 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
     experience: "",
     github: "",
   });
-  const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<FormData> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "이름을 입력해주세요.";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "이메일을 입력해주세요.";
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = "올바른 이메일 형식을 입력해주세요.";
-    }
-
-    if (!formData.experience.trim()) {
-      newErrors.experience = "경력 연차를 선택해주세요.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const { errors, validateForm, clearFieldError } = useFormValidation(formData);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    if (!validateForm(formData)) {
       const firstErrorField = document.querySelector(
         '[aria-invalid="true"]'
       ) as HTMLElement;
@@ -75,7 +64,7 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+      clearFieldError(field);
     }
   };
 
@@ -86,93 +75,68 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
       role="form"
       aria-label="문의 폼"
     >
-      <div className="form-field">
-        <label htmlFor="name" className="form-label">
-          이름 / 닉네임 *
-        </label>
-        <input
+      <FormField>
+        <FormLabel htmlFor="name" required>
+          이름 / 닉네임
+        </FormLabel>
+        <FormInput
           id="name"
           type="text"
           value={formData.name}
-          onChange={(e) => handleInputChange("name", e.target.value)}
-          aria-invalid={!!errors.name}
-          aria-describedby={errors.name ? "name-error" : undefined}
-          aria-required="true"
-          className="form-input"
+          onChange={(value: string) => handleInputChange("name", value)}
+          invalid={!!errors.name}
+          errorId={errors.name ? "name-error" : undefined}
+          required
         />
-        {errors.name && (
-          <div id="name-error" role="alert" className="error-message">
-            {errors.name}
-          </div>
-        )}
-      </div>
+        <FormError id="name-error" message={errors.name || ""} />
+      </FormField>
 
-      <div className="form-field">
-        <label htmlFor="email" className="form-label">
-          이메일 *
-        </label>
-        <input
+      <FormField>
+        <FormLabel htmlFor="email" required>
+          이메일
+        </FormLabel>
+        <FormInput
           id="email"
           type="email"
           value={formData.email}
-          onChange={(e) => handleInputChange("email", e.target.value)}
-          aria-invalid={!!errors.email}
-          aria-describedby={errors.email ? "email-error" : undefined}
-          aria-required="true"
-          className="form-input"
+          onChange={(value: string) => handleInputChange("email", value)}
+          invalid={!!errors.email}
+          errorId={errors.email ? "email-error" : undefined}
+          required
         />
-        {errors.email && (
-          <div id="email-error" role="alert" className="error-message">
-            {errors.email}
-          </div>
-        )}
-      </div>
+        <FormError id="email-error" message={errors.email || ""} />
+      </FormField>
 
-      <div className="form-field">
-        <label htmlFor="experience" className="form-label">
-          FE 경력 연차 *
-        </label>
-        <select
+      <FormField>
+        <FormLabel htmlFor="experience" required>
+          FE 경력 연차
+        </FormLabel>
+        <FormSelect
           id="experience"
           value={formData.experience}
-          onChange={(e) => handleInputChange("experience", e.target.value)}
-          aria-invalid={!!errors.experience}
-          aria-describedby={errors.experience ? "experience-error" : undefined}
-          aria-required="true"
-          className="form-input"
-        >
-          <option value="">선택해주세요</option>
-          <option value="0-3년">0-3년</option>
-          <option value="4-7년">4-7년</option>
-          <option value="8년 이상">8년 이상</option>
-        </select>
-        {errors.experience && (
-          <div id="experience-error" role="alert" className="error-message">
-            {errors.experience}
-          </div>
-        )}
-      </div>
+          onChange={(value: string) => handleInputChange("experience", value)}
+          options={experienceOptions}
+          placeholder="선택해주세요"
+          invalid={!!errors.experience}
+          errorId={errors.experience ? "experience-error" : undefined}
+          required
+        />
+        <FormError id="experience-error" message={errors.experience || ""} />
+      </FormField>
 
-      <div className="form-field">
-        <label htmlFor="github" className="form-label">
-          GitHub 링크 (선택)
-        </label>
-        <input
+      <FormField>
+        <FormLabel htmlFor="github">GitHub 링크 (선택)</FormLabel>
+        <FormInput
           id="github"
           type="url"
           value={formData.github}
-          onChange={(e) => handleInputChange("github", e.target.value)}
-          aria-invalid={!!errors.github}
-          aria-describedby={errors.github ? "github-error" : undefined}
-          className="form-input"
+          onChange={(value: string) => handleInputChange("github", value)}
           placeholder="https://github.com/username"
+          invalid={!!errors.github}
+          errorId={errors.github ? "github-error" : undefined}
         />
-        {errors.github && (
-          <div id="github-error" role="alert" className="error-message">
-            {errors.github}
-          </div>
-        )}
-      </div>
+        <FormError id="github-error" message={errors.github || ""} />
+      </FormField>
 
       <div className="form-buttons" role="group" aria-label="폼 액션 버튼">
         <button
